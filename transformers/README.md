@@ -8,10 +8,10 @@ My implementation will then be used to create an elementary language model using
 
 ### The Transformer
 
-The Transformer is a model that uses a mechanism called self-attention to enconde one sequence to an intermediate vector, and decode it into a different sequence.
+The Transformer is a model that uses a mechanism called multi-headed self-attention to enconde one sequence to an intermediate vector, and decode it into a different sequence.
 
 An example of this is language translation
 
 [English text] -> encode -> intermediate vector -> decode -> [french text]
 
-
+Before transformers, this problem was solved using [Recurrent Neural Networks](https://en.wikipedia.org/wiki/Recurrent_neural_network). This was later replaced
