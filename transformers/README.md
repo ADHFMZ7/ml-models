@@ -15,3 +15,5 @@ An example of this is language translation
 [English text] -> encode -> intermediate vector -> decode -> [french text]
 
 Before transformers, this problem was solved using [Recurrent Neural Networks](https://en.wikipedia.org/wiki/Recurrent_neural_network). This was later replaced
+
+The Transformer has been used with good result in many different areas of machine learning.
