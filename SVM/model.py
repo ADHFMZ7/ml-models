@@ -15,11 +15,12 @@ for x in range(1000):
 class SVM:
 
     def __init__(self):
-        pass
+        self.hyperplane = [0, 0, 0]
+    
 
     def forward(self, x):
 
-        
+                
 
         return x
 
