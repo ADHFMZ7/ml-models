@@ -14,19 +14,6 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalize the image
 ])
 
-# Load the ImageNet dataset
-# imagenet_dataset = datasets.ImageNet(root='path_to_imagenet_dataset', split='train', transform=transform)
-
-# Create a DataLoader to iterate over the dataset in batches
-# batch_size = 32
-# imagenet_dataloader = DataLoader(imagenet_dataset, batch_size=batch_size, shuffle=True)
-
-# Example usage:
-# for images, labels in imagenet_dataloader:
-#     # Process the batch of images and labels here
-#     plt.imshow(images[0])
-#     plt.show()
-
 
 device = (
     "cuda"
@@ -89,15 +76,30 @@ class AlexNet(nn.Module):
             nn.Linear(2048, num_classes),
         )
 
+        self.loss = nn.CrossEntropyLoss()
 
-        def forward(x):
-            x = self.layer1(x)
-            x = self.layer2(x)
-            x = self.layer3(x)
-            x = self.layer4(x)
-            x = self.layer5(x)
-            x = self.layer6(x)
-            x = self.layer7(x)
-            return self.layer8(x)            
+
+    def forward(self, x, y):
+        x = self.layer1(x)
+        print("post layer 1: ", x.shape)
+        x = self.layer2(x)
+        print("post layer 2: ", x.shape)
+        x = self.layer3(x)
+        print("post layer 3: ", x.shape)
+        x = self.layer4(x)
+        print("post layer 4: ", x.shape)
+        x = self.layer5(x)
+        print("post layer 5: ", x.shape)
+        x = self.layer6(x)
+        print("post layer 6: ", x.shape)
+        x = self.layer7(x)
+        print("post layer 7: ", x.shape)
+        logits = self.layer8(x)            
+        print("post layer 8: ", x.shape)
+        loss = self.loss(logits, y)
+         
+        
+        return logits, loss 
+        
  
 
