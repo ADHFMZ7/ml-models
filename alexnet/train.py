@@ -1,7 +1,9 @@
 import torch
 import torchvision
 import torchvision.transforms as transforms
+import torchvision.datasets as datasets
 from model import AlexNet
+import os
 
 learning_rate = 0.001
 batch_size = 32
@@ -10,10 +12,27 @@ epochs = 10
 grad_clip = 5
 
 def get_data():
-    train = torchvision.datasets.CIFAR10(root='../data', train=True, download=True, transform=transforms.ToTensor())
-    test = torchvision.datasets.CIFAR10(root='../data', train=False, download=True, transform=transforms.ToTensor())
-    
-    return train, test
+
+    data_transforms = {
+    "train": transforms.Compose([transforms.ToTensor()]),
+    "val": transforms.Compose([transforms.ToTensor()]),
+    "test": transforms.Compose([transforms.ToTensor()]),
+    }
+
+    data_dir = "../data/tiny-224"
+    num_workers = {"train": 2, "val": 0, "test": 0}
+    image_datasets = {
+        x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x]) for x in ["train", "val", "test"]
+    }
+    dataloaders = {
+        x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True, num_workers=num_workers[x])
+        for x in ["train", "val", "test"]
+    }
+    dataset_sizes = {x: len(image_datasets[x]) for x in ["train", "val", "test"]}
+
+    print(dataloaders["train"])
+
+    return dataloaders["train"], dataloaders["test"] 
 
 
 def train(model, data):
@@ -22,7 +41,7 @@ def train(model, data):
     
 class Trainer:
     
-    def __init__(self, model, train_data):
+    def __init__(self, model, train_data, test_data):
         
         self.model = model
         self.model.to(device)
@@ -31,44 +50,36 @@ class Trainer:
     
     def train(self):
         model = self.model 
-        
-        train_loader = torch.utils.data.DataLoader(self.train_data, batch_size=batch_size, shuffle=True)
-        
+         
         model.train()
-        data_iter = iter(train_loader) 
         
         for epoch in range(epochs):
-           
-            # Get next minibatch of data 
-            try:
-                batch = next(data_iter)
-            except StopIteration:
-                data_iter = iter(train_loader)
-                batch = next(data_iter)
+            
+            for batch in self.train_data:
+
+                # Move data to device
+                batch = [t.to(device) for t in batch]
+                x, y = batch 
+                print(x.shape, y.shape) 
+                # Forward pass 
+                logits, self.loss = model(x, y) 
                 
-            # Move data to device
-            batch = [t.to(device) for t in batch]
-            x, y = batch 
-            print(x.shape, y.shape) 
-            # Forward pass 
-            logits, self.loss = model(x, y) 
-            
-            # Backward pass
-            model.zero_grad()
-            self.loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
-            self.optimizer.step()
-            
-            # Log training progress
-            if epoch % 100 == 0:
-                print(f'Epoch {epoch}, Loss: {self.loss.item()}')
+                # Backward pass
+                model.zero_grad()
+                self.loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
+                self.optimizer.step()
+                
+                # Log training progress
+                if epoch % 100 == 0:
+                    print(f'Epoch {epoch}, Loss: {self.loss.item()}')
                 
                 
 if __name__ == '__main__': 
     model = AlexNet(10)
-    train_data, _ = get_data()
+    train_data, test_data = get_data()
     
-    trainer = Trainer(model, train_data)
+    trainer = Trainer(model, train_data, test_data)
     trainer.train()
     
     # Save model 

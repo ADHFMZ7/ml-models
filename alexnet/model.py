@@ -80,6 +80,7 @@ class AlexNet(nn.Module):
 
 
     def forward(self, x, y):
+        print("PRESHAPE:", x.shape)
         x = self.layer1(x)
         print("post layer 1: ", x.shape)
         x = self.layer2(x)
