@@ -24,5 +24,5 @@ def load_data(context_len: int = 10):
     return X, Y
 
 data = load_data()
-
+print(data[0][:100])
 
