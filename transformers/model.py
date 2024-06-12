@@ -33,6 +33,9 @@ class SelfAttentionHead(nn.Module):
     def forward(self, x):
 
         B, T, C = x.shape
+        # B - batch dimension; batch size
+        # T - Time dimension; the sequence length
+        # C - Channel dimension; the embedding size
 
         key = self.key(x) 
         query = self.query(x)
