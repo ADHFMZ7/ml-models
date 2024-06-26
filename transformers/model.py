@@ -1,6 +1,6 @@
 import torch
 from torch import nn, Tensor
-from torch import nn.functional as F
+import torch.nn.functional as F
 
 
 class Transformer(nn.Module):
